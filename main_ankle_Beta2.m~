@@ -1,0 +1,116 @@
+clc
+clear
+close all
+
+
+% Foot_R = [ -0.03920; -0.18425; 0.60648];
+% Foot_L = [ 0.02020; -0.17438; 0.72017];
+% Shank_R = deg2rad([-1.307; 6.751; 13.605]);
+% Shank_L = deg2rad([0.443; 6.441; -119.208]);
+
+Foot_R = [ -0.01740;-0.18240;-0.04627];
+Foot_L = [0.01523;-0.18030;0.085977];
+Shank_R = deg2rad([1.45084; 0.00245; 2.4293]);
+Shank_L = deg2rad([-1.4504; -0.0061; 0.89242]);
+
+% Foot_R*180/pi
+% Foot_L*180/pi
+% 
+% Shank_R*180/pi
+% Shank_L*180/pi
+
+IMUOrient = [{'x','-y','-z'};{'a','a','a'};{'x','-y','-z'}];
+RL_r = IMUOrient2Body(IMUOrient(1,:));
+RL_l = IMUOrient2Body(IMUOrient(3,:));
+
+RIMU_FootR = IMURotationMatrix(Foot_R);
+RIMU_FootL = IMURotationMatrix(Foot_L);
+
+R_NED = rot(1,pi,3)*rot(3,rand,3);
+
+
+RBodyFlx_r = R_NED*RIMU_FootR*RL_r;
+% qBodyFlx_r = rot2q(RBodyFlx_r)*180/pi
+
+RBodyFlx_l = R_NED*RIMU_FootL*RL_l;
+% qBodyFlx_l = rot2q(RBodyFlx_l)*180/pi
+
+
+
+D_FootR = OmitNonObservable(RBodyFlx_r);
+% qBodyFlx_l = rot2q(D_FootR(1:3,1:3))*180/pi
+
+D_FootL = OmitNonObservable(RBodyFlx_l);
+% qBodyFlx_l = rot2q(D_FootL(1:3,1:3))*180/pi
+
+
+
+%=================
+RIMU_ShankR = IMURotationMatrix(Shank_R);
+RIMU_ShankL = IMURotationMatrix(Shank_L);
+
+
+IMUOrient = [{'-y','-z','x'};{'-y','-z','x'};{'y','z','x'}];
+RL_r = IMUOrient2Body(IMUOrient(1,:));
+RL_l = IMUOrient2Body(IMUOrient(3,:));
+
+RIMU_ShankR = IMURotationMatrix(Shank_R);
+RIMU_ShankL = IMURotationMatrix(Shank_L);
+
+R_NED = rot(1,pi,3)*rot(3,rand,3);
+RBodyFlx_r = R_NED*RIMU_ShankR*RL_r;
+qBodyFlx_r = rot2q(RBodyFlx_r)*180/pi
+
+RBodyFlx_l = R_NED*RIMU_ShankL*RL_l;
+qBodyFlx_l = rot2q(RBodyFlx_l)*180/pi
+
+
+D_ShankR = OmitNonObservable(RBodyFlx_r);
+qBodyFlx_l = rot2q(D_ShankR(1:3,1:3))*180/pi
+
+D_ShankL = OmitNonObservable(RBodyFlx_l);
+qBodyFlx_l = rot2q(D_ShankL(1:3,1:3))*180/pi
+
+D_ShankR = OmitNonObservable(RIMU_ShankR);
+RRRR = rot2q(D_ShankR(1:3,1:3))*180/pi
+
+D_ShankL = OmitNonObservable(RIMU_ShankL);
+LLLL = rot2q(D_ShankL(1:3,1:3))*180/pi
+
+
+
+RR = D_FootR(1:3,1:3)'*D_ShankR(1:3,1:3);
+qR = rot2q_Ankle(RR)';
+
+RL = D_FootL(1:3,1:3)'*D_ShankL(1:3,1:3);
+qL = rot2q_Ankle(RL)';
+
+qR*180/pi
+qL*180/pi
+
+%%
+
+% Pelvis_R = deg2rad([-0.358; 7.450; 46.01]);
+% Pelvis_L = deg2rad([-0.379; 7.457; 45.771]);
+% 
+% 
+% %=================
+% RIMU_PelvisR = IMURotationMatrix(Pelvis_R);
+% RIMU_PelvisL = IMURotationMatrix(Pelvis_L);
+% 
+% D_PelvisR = OmitNonObservable(RIMU_PelvisR);
+% RRRR = rot2q(D_PelvisR(1:3,1:3))*180/pi
+% 
+% D_PelvisL = OmitNonObservable(RIMU_PelvisL);
+% LLLL = rot2q(D_PelvisL(1:3,1:3))*180/pi
+% 
+% RR = D_PelvisR(1:3,1:3)'*D_FootR(1:3,1:3);
+% qR = rot2q(RR)';
+% 
+% RL = D_PelvisL(1:3,1:3)'*D_FootL(1:3,1:3);
+% qL = rot2q(RL)';
+% 
+% qR*180/pi
+% qL*180/pi
+
+
