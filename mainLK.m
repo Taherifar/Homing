@@ -17,6 +17,7 @@ Left = Data(:,5:7)/180*pi;
 % Right(u,1:3) = [0 0 0];
 % end
 
+% no
 figure(1)
 subplot(311); k = 1;plot(t,Right(:,k)*180/pi,t,Left(:,k)*180/pi);title('pitch')
 subplot(312);k = 2; plot(t,Right(:,k)*180/pi,t,Left(:,k)*180/pi);title('roll')
